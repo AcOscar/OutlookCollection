@@ -1,6 +1,7 @@
 ' Microsoft Scripting Runtime muss gebunden werden
 ' (Extras - Verweise - Microsoft Scripting Runtime aktivieren)
 
+    Dim dict As Dictionary
 
 Sub DupeKiller()
 
@@ -14,10 +15,29 @@ Sub DupeKiller()
   
     ' Create a dictionary instance.
     Debug.Print "--- Initializing Dictionary"
-    Dim dict As Dictionary
     Set dict = New Dictionary
     dict.CompareMode = BinaryCompare
   
+  
+  ProcessFolderDupKill objfolder
+
+        
+End Sub
+
+Private Sub ProcessFolderDupKill(ByVal objfolder As MAPIFolder)
+Rem For Each subf In folder.Folders
+Rem    removeinfolder (subf)
+Rem Next subf
+    Dim olFolder As Outlook.Folder
+
+    Dim strTemp As String
+    Rem Dim Item As Object
+    If (objfolder.Folders.Count > 0) Then
+        For Each olFolder In objfolder.Folders
+            ProcessFolderDupKill olFolder
+        Next
+    End If
+
     Debug.Print "--- Loading Items"
     Dim items As items
     Set items = objfolder.items
@@ -56,5 +76,21 @@ Sub DupeKiller()
         
         Set Item = items.GetPrevious
     Loop
-        
+    
+    
+'Itemscount = oParent.items.Count + Itemscount
+'
+' For Each Item In oParent.items
+'     Rem If Mid(Item.Subject, 1, 6) = "Copy: " Then
+'     If Item.Subject = "" Then
+'       Rem strTemp = Replace(Item.Subject, "Copy: ", "")
+'       Rem Item.Subject = strTemp
+'       Item.Subject = " "
+'       iItemsUpdated = iItemsUpdated + 1
+'       Item.Save
+'
+'     End If
+'
+' Next Item
+
 End Sub
