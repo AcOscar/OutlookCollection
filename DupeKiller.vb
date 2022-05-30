@@ -3,6 +3,7 @@
 
     Dim dict As Dictionary
 
+
 Sub DupeKiller()
 
 ' Skript fordert Auswahl eines Ordners auf
@@ -25,6 +26,7 @@ Sub DupeKiller()
 End Sub
 
 Private Sub ProcessFolderDupKill(ByVal objfolder As MAPIFolder)
+On Error Resume Next
 Rem For Each subf In folder.Folders
 Rem    removeinfolder (subf)
 Rem Next subf
@@ -37,8 +39,8 @@ Rem Next subf
             ProcessFolderDupKill olFolder
         Next
     End If
-
-    Debug.Print "--- Loading Items"
+    
+    'Debug.Print "--- Loading Items"
     Dim items As items
     Set items = objfolder.items
     
@@ -51,26 +53,28 @@ Rem Next subf
         If InStr(1, Item.MessageClass, ".SMIME", vbTextCompare) > 0 Then
             key = Item.Subject
         ElseIf InStr(1, Item.MessageClass, "IPM.Note", vbTextCompare) > 0 Then
-            Debug.Print "  Handling Note"
+            'Debug.Print "  Handling Note"
             key = Item.Subject & vbTab & Item.SentOn
         ElseIf InStr(1, Item.MessageClass, "IPM.Appointment", vbTextCompare) > 0 Then
-            Debug.Print "  Handling Appointment"
+            'Debug.Print "  Handling Appointment"
             key = Item.Subject & vbTab & Item.Start & vbTab & Item.End
         Else
             key = ""
         End If
         
         If key <> "" Then
-            Debug.Print "Item:" & key
             If dict.Exists(key) Then
-                Debug.Print "  Duplicate Found. DELETE"
-                Item.Delete
+                Debug.Print "--- Folder: " & objfolder.Name
+                Debug.Print key
+
+                Rem Debug.Print "  Duplicate Found. DELETE"
+                'Item.Delete
             Else
-                Debug.Print "  First occurence. Add to Dictionary"
+                'Debug.Print "  First occurence. Add to Dictionary"
                 dict.Add key, True
             End If
         Else
-            Debug.Print "  Skip Mesageclass:" & Item.MessageClass
+            'Debug.Print "  Skip Mesageclass:" & Item.MessageClass
         End If
         
         
