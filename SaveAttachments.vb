@@ -178,72 +178,163 @@ Set objOL = Nothing
 End Sub
 
 Function ClearSubject(ByVal Subject As String) As String
+
+Const sBadChar As String = "&\/:*?<>|[]"""
+
 ClearSubject = Subject
 ClearSubject = Replace(ClearSubject, "RE:", "", vbTextCompare)
 ClearSubject = Replace(ClearSubject, "AW:", "", vbTextCompare)
 ClearSubject = Replace(ClearSubject, "FW:", "", vbTextCompare)
 ClearSubject = Replace(ClearSubject, "WG:", "", vbTextCompare)
 
-Const sBadChar As String = "\/:*?<>|[]"""
+
+Dim CleanString As String
+'we have now a minimum length of 1 :-)
+CleanString = "A"
+
+Dim CheckChar As String
+
 Dim i As Long
+Dim LenCS As Long
 
-'Assume valid unless it isn't
-  ValidFileName = True
+LenCS = Len(ClearSubject)
 
-'Loop through each "Bad Character" and test for an instance
-  For i = 1 To Len(sBadChar)
-    If InStr(ClearSubject, Mid$(sBadChar, i, 1)) > 0 Then
-      ClearSubject = Replace(ClearSubject, Mid$(sBadChar, i, 1), " ", 1, -1, vbTextCompare)
+
+If LenCS > 70 Then
+    LenCS = 70
+End If
+
+For i = 0 To LenCS - 1
+    CheckChar = Mid(ClearSubject, i + 1, 1)
+    'keep out a lot of not allowd chars
+    If Asc(CheckChar) > 31 Then
+        'no double whitespace
+        If CheckChar = " " And Right(CleanString, 1) = " " Then
+            'GoTo endnext
+        Else
+            'CleanString = CleanString & CheckChar
+            'GoTo endnext
+            If InStr(1, sBadChar, CheckChar, vbTextCompare) = 0 Then
+                        CleanString = CleanString & CheckChar
+                'GoTo endnext
+            End If
+        End If
+        'looking for the rest of uglly chars
+    End If
+'endnext:
+    
+Next
+
+'removing the leading A
+CleanString = Mid(CleanString, 2, 100)
+
+'removing leading whitespace
+CleanString = LTrim(CleanString)
+
+
+'check for points and whitespace at the end
+For i = Len(CleanString) To 1 Step -1
+
+    If Right(ClearSubject, 1) = " " Then
+        CleanString = Left(CleanString, i - 1)
+        i = i - 1
+    'Else
+        'Exit For
     
     End If
-  Next
-
-ClearSubject = Replace(ClearSubject, "  ", " ", 1, -1, vbTextCompare)
-
-ClearSubject = Left(ClearSubject, 70)
-
-ClearSubject = Trim(ClearSubject)
-
-For i = Len(ClearSubject) To 1 Step -1
-
-    'If Right(ClearSubject, 2) = ".." Then Stop
-    'If Right(ClearSubject, 1) = "." Then Stop
-    
-    If Right(ClearSubject, 1) = "." Then
-        ClearSubject = Left(ClearSubject, i - 1)
+   
+    If Right(CleanString, 1) = "." Then
+        CleanString = Left(CleanString, i - 1)
         i = i - 1
     Else
         Exit For
     
     End If
     
-    
-    
-    
-    
 Next
-    If Right(ClearSubject, 1) = vbTab Then
-        ClearSubject = Left(ClearSubject, i - 1)
-       ' i = i - 1
-    'Else
-        'Exit For
-    
-    End If
 
 
+'CON , PRN, AUX, NUL
+'COM1 , COM2, COM3, COM4, COM5, COM6, COM7, COM8, COM9
+'LPT1 , LPT2, LPT3, LPT4, LPT5, LPT6, LPT7, LPT8, LPT9
+If CleanString = "CON" Then
+    CleanString = "-CON-"
+End If
 
-
-ClearSubject = Trim(ClearSubject)
-
-If ClearSubject = "." Then
-    ClearSubject = "-"
+If CleanString = "PRN" Then
+    CleanString = "-PRN-"
+End If
+If CleanString = "AUX" Then
+    CleanString = "-AUX-"
+End If
+If CleanString = "NUL" Then
+    CleanString = "-NUL-"
+End If
+If CleanString = "COM1" Then
+    CleanString = "-COM1-"
+End If
+If CleanString = "COM2" Then
+    CleanString = "-COM2-"
+End If
+If CleanString = "COM3" Then
+    CleanString = "-COM3-"
+End If
+If CleanString = "COM4" Then
+    CleanString = "-COM4-"
+End If
+If CleanString = "COM5" Then
+    CleanString = "-COM5-"
+End If
+If CleanString = "COM6" Then
+    CleanString = "-COM-"
+End If
+If CleanString = "COM7" Then
+    CleanString = "-COM7-"
+End If
+If CleanString = "COM8" Then
+    CleanString = "-COM8-"
+End If
+If CleanString = "COM9" Then
+    CleanString = "-COM9-"
+End If
+If CleanString = "LPT1" Then
+    CleanString = "-LPT1-"
+End If
+If CleanString = "LPT2" Then
+    CleanString = "-LPT2-"
+End If
+If CleanString = "LPT3" Then
+    CleanString = "-LPT3-"
+End If
+If CleanString = "LPT4" Then
+    CleanString = "-LPT4-"
+End If
+If CleanString = "LPT5" Then
+    CleanString = "-LPT5-"
+End If
+If CleanString = "LPT6" Then
+    CleanString = "-LPT6-"
+End If
+If CleanString = "LPT7" Then
+    CleanString = "-LPT7-"
+End If
+If CleanString = "LPT8" Then
+    CleanString = "-LPT8-"
+End If
+If CleanString = "LPT9" Then
+    CleanString = "-LPT9-"
 End If
 
 
 
 
 
+If Len(CleanString) = 0 Then
+    CleanString = "-"
+End If
 
+
+ClearSubject = CleanString
 End Function
 
 
