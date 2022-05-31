@@ -1,10 +1,13 @@
 Dim strFolderpath As String
 Const PR_ATTACH_CONTENT_ID As String = "http://schemas.microsoft.com/mapi/proptag/0x3712001F"
 Const PR_ATTACHMENT_HIDDEN As String = "http://schemas.microsoft.com/mapi/proptag/0x7FFE000B"
+Dim fso As New Scripting.FileSystemObject
+
 
 Public Sub SaveAttachments()
 
 Dim objOL As Outlook.Application
+
 
 Dim objAttachments As Outlook.Attachments
 Dim objSelection As Outlook.Selection
@@ -12,10 +15,10 @@ Dim i As Long
 Dim lngCount As Long
 Dim strFile As String
 
-Dim strDeletedFiles As String
+Rem Dim strDeletedFiles As String
 
 ' Get the path to your My Documents folder
-strFolderpath = "c:\temp\Attachments\"
+strFolderpath = "C:\temp\Attachments\"
 Rem strFolderpath = strFolderpath & "\Attachments\"
 
 'On Error Resume Next
@@ -24,29 +27,29 @@ Rem strFolderpath = strFolderpath & "\Attachments\"
 Set objOL = CreateObject("Outlook.Application")
 
 ' Get the collection of selected objects.
-Set objSelection = objOL.ActiveExplorer.Selection
+Rem Set objSelection = objOL.ActiveExplorer.Selection
 
 
 Dim cid As String
 ' Skript fordert Auswahl eines Ordners auf
 ' Sucht alle mails mit gleichem Betreff und Sendedatum
 
-    ' Dim Folder and ask User to select the folder
-    Debug.Print "--- Pick Folder to check für duplicates"
-    Dim objfolder As MAPIFolder
-    Set objfolder = Outlook.GetNamespace("MAPI").PickFolder
-  
-  
-    If Not objfolder Is Nothing Then
+' Dim Folder and ask User to select the folder
+Debug.Print "--- Pick Folder to check für duplicates"
+Dim objfolder As MAPIFolder
+Set objfolder = Outlook.GetNamespace("MAPI").PickFolder
+
+
+If Not objfolder Is Nothing Then
     
-          ' Create a dictionary instance.
-          Debug.Print "--- Initializing Dictionary"
-          Set dict = New Dictionary
-          dict.CompareMode = BinaryCompare
-        
-        
-          ProcessSaveAttachments objfolder
-    End If
+    ' Create a dictionary instance.
+    Debug.Print "---"
+    Rem Set dict = New Dictionary
+    Rem dict.CompareMode = BinaryCompare
+
+
+ProcessSaveAttachments objfolder
+End If
 
 End Sub
 
@@ -54,20 +57,20 @@ Sub ProcessSaveAttachments(ByVal objfolder As MAPIFolder)
 Dim objMsg As Outlook.MailItem 'Object
 ' Set the Attachment folder.
 
-    Dim olFolder As Outlook.Folder
+Dim olFolder As Outlook.Folder
 
-    Dim strTemp As String
-    Rem Dim Item As Object
-    If (objfolder.Folders.Count > 0) Then
-        For Each olFolder In objfolder.Folders
-            ProcessSaveAttachments olFolder
-        Next
-    End If
+'Dim strTemp As String
+Rem Dim Item As Object
+If (objfolder.Folders.Count > 0) Then
+    For Each olFolder In objfolder.Folders
+        ProcessSaveAttachments olFolder
+    Next
+End If
 
 Dim objattachment As attachment
 Debug.Print "folder: " & objfolder.FolderPath
 Dim htmlbody As String
-    Dim pa As PropertyAccessor
+Dim pa As PropertyAccessor
 
 ' Check each selected item for attachments. If attachments exist,
 ' save them to the strFolderPath folder and strip them from the item.
@@ -78,6 +81,7 @@ If TypeOf objFolderItem Is Outlook.MailItem Then
 Else
     Exit For
 End If
+Dim Fldr As Scripting.Folder
 
 
     ' This code only strips attachments from mail items.
@@ -85,7 +89,7 @@ End If
     ' Get the Attachments collection of the item.
     Set objAttachments = objMsg.Attachments
     lngCount = objAttachments.Count
-    strDeletedFiles = ""
+    Rem strDeletedFiles = ""
 
 
     Debug.Print "message: " & objMsg.Subject
@@ -102,7 +106,9 @@ End If
     
         Dim attachmentfolder As String
         
-        attachmentfolder = Format(objMsg.SentOn, "YYMMDD")
+        attachmentfolder = Format(objMsg.SentOn, "YYYY") & "\"
+
+        attachmentfolder = attachmentfolder & Format(objMsg.SentOn, "YYMMDD")
     
         attachmentfolder = attachmentfolder & "_" & ClearSubject(objMsg.Subject)
     
@@ -120,13 +126,12 @@ End If
             ' Get the file name.
             
             Set objattachment = objAttachments.Item(i)
-           Debug.Print "attachment: " & objattachment.FileName
+            Debug.Print "attachment: " & objattachment.FileName
 
             strFile = objattachment.FileName
 
             Set pa = objAttachments.Item(i).PropertyAccessor
             cid = pa.GetProperty(PR_ATTACH_CONTENT_ID)
-            
             If Len(cid) > 0 Then
                 If InStr(objMsg.htmlbody, cid) Then
                 Else
@@ -138,6 +143,7 @@ End If
                     
                         If CheckCreateFolder(attachmentfolder) Then
                         
+                            Set Fldr = fso.GetFolder(attachmentfolder)
                             strFile = attachmentfolder & "\" & strFile
                             objAttachments.Item(i).SaveAsFile strFile
                             Debug.Print "save: " & strFile
@@ -149,8 +155,9 @@ End If
             Else
                 If CheckCreateFolder(attachmentfolder) Then
                 
-                    strFile = attachmentfolder & "\" & strFile
-                    objAttachments.Item(i).SaveAsFile strFile
+                    Set Fldr = fso.GetFolder(attachmentfolder)
+                    attachmentfolder = Fldr.ShortPath
+                    objAttachments.Item(i).SaveAsFile attachmentfolder & "\" & strFile
                     Debug.Print "save: " & strFile
                 End If
                  
@@ -191,7 +198,51 @@ Dim i As Long
     End If
   Next
 
+ClearSubject = Replace(ClearSubject, "  ", " ", 1, -1, vbTextCompare)
+
+ClearSubject = Left(ClearSubject, 70)
+
 ClearSubject = Trim(ClearSubject)
+
+For i = Len(ClearSubject) To 1 Step -1
+
+    'If Right(ClearSubject, 2) = ".." Then Stop
+    'If Right(ClearSubject, 1) = "." Then Stop
+    
+    If Right(ClearSubject, 1) = "." Then
+        ClearSubject = Left(ClearSubject, i - 1)
+        i = i - 1
+    Else
+        Exit For
+    
+    End If
+    
+    
+    
+    
+    
+Next
+    If Right(ClearSubject, 1) = vbTab Then
+        ClearSubject = Left(ClearSubject, i - 1)
+       ' i = i - 1
+    'Else
+        'Exit For
+    
+    End If
+
+
+
+
+ClearSubject = Trim(ClearSubject)
+
+If ClearSubject = "." Then
+    ClearSubject = "-"
+End If
+
+
+
+
+
 
 End Function
 
@@ -204,10 +255,12 @@ Function CheckCreateFolder(FolderToCheckOrCreate As String) As Boolean
     Dim testPath As String
     
     For j = 0 To UBound(PathPArts)
-        testPath = testPath & PathPArts(j) & "\"
+        testPath = testPath & Trim(PathPArts(j)) & "\"
     
         If Not CheckFolderExists(testPath) Then
-            MkDir (testPath)
+            'MkDir (testPath)
+            fso.CreateFolder (testPath)
+            
             If Not CheckFolderExists(testPath) Then
                 CheckCreateFolder = False
                 Exit Function
@@ -226,16 +279,37 @@ End Function
 Function CheckFolderExists(strFolderName As String) As Boolean
  
 Dim strFolderExists As String
-   
-    strFolderExists = Dir(strFolderName, vbDirectory)
- 
-    If strFolderExists = "" Then
-        Rem MsgBox "The selected folder doesn't exist"
-        CheckFolderExists = False
+   If strFolderName = "\\" Then
+   CheckFolderExists = True
+   Exit Function
+   End If
+   If strFolderName = "\\.\" Then
+   CheckFolderExists = True
+   Exit Function
+   End If
+    If fso.FolderExists(strFolderName) Then
+    
+    
+        CheckFolderExists = True
     Else
         Rem MsgBox "The selected folder exists"
-        CheckFolderExists = True
-   
+        CheckFolderExists = False
+    
+    
     End If
+    
+    
+    
+    'strFolderExists = Dir(strFolderName, vbDirectory)
+ 
+    'If strFolderExists = "" Then
+        Rem MsgBox "The selected folder doesn't exist"
+        'CheckFolderExists = False
+    'Else
+        Rem MsgBox "The selected folder exists"
+        'CheckFolderExists = True
+   
+    'End If
  
 End Function
+
