@@ -1,7 +1,7 @@
 ' Microsoft Scripting Runtime muss gebunden werden
 ' (Extras - Verweise - Microsoft Scripting Runtime aktivieren)
 
-    Dim dict As Dictionary
+Dim dict As Dictionary
 
 
 Sub DupeKiller()
@@ -18,11 +18,9 @@ Sub DupeKiller()
     Debug.Print "--- Initializing Dictionary"
     Set dict = New Dictionary
     dict.CompareMode = BinaryCompare
-  
-  
-  ProcessFolderDupKill objfolder
+    
+    ProcessFolderDupKill objfolder
 
-        
 End Sub
 
 Private Sub ProcessFolderDupKill(ByVal objfolder As MAPIFolder)
@@ -54,7 +52,7 @@ Rem Next subf
             key = Item.Subject
         ElseIf InStr(1, Item.MessageClass, "IPM.Note", vbTextCompare) > 0 Then
             'Debug.Print "  Handling Note"
-            key = Item.Subject & vbTab & Item.SentOn
+            key = Item.SentOn & vbTab & Item.SenderEmailAddress & vbTab & Item.Subject
         ElseIf InStr(1, Item.MessageClass, "IPM.Appointment", vbTextCompare) > 0 Then
             'Debug.Print "  Handling Appointment"
             key = Item.Subject & vbTab & Item.Start & vbTab & Item.End
@@ -77,24 +75,7 @@ Rem Next subf
             'Debug.Print "  Skip Mesageclass:" & Item.MessageClass
         End If
         
-        
         Set Item = items.GetPrevious
     Loop
-    
-    
-'Itemscount = oParent.items.Count + Itemscount
-'
-' For Each Item In oParent.items
-'     Rem If Mid(Item.Subject, 1, 6) = "Copy: " Then
-'     If Item.Subject = "" Then
-'       Rem strTemp = Replace(Item.Subject, "Copy: ", "")
-'       Rem Item.Subject = strTemp
-'       Item.Subject = " "
-'       iItemsUpdated = iItemsUpdated + 1
-'       Item.Save
-'
-'     End If
-'
-' Next Item
 
 End Sub
