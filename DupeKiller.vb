@@ -1,13 +1,13 @@
 ' Microsoft Scripting Runtime muss gebunden werden
-' (Extras - Verweise - Microsoft Scripting Runtime aktivieren)
+' (Extras - Reference - Microsoft Scripting Runtime)
 
 Dim dict As Dictionary
 
 
 Sub DupeKiller()
 
-' Skript fordert Auswahl eines Ordners auf
-' Sucht alle mails mit gleichem Betreff und Sendedatum
+    ' first pick a folder
+    ' looking for mails with same subject and date
 
     ' Dim Folder and ask User to select the folder
     Debug.Print "--- Pick Folder to check für duplicates"
@@ -66,7 +66,7 @@ Rem Next subf
                 Debug.Print key
 
                 Rem Debug.Print "  Duplicate Found. DELETE"
-                'Item.Delete
+                Item.Delete
             Else
                 'Debug.Print "  First occurence. Add to Dictionary"
                 dict.Add key, True
