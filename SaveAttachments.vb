@@ -18,7 +18,7 @@ Dim strFile As String
 Rem Dim strDeletedFiles As String
 
 ' Get the path to your My Documents folder
-strFolderpath = "C:\temp\Attachments\"
+strFolderpath = "O:\1212_USZ\12_CORRESPONDENCE\Attachments\"
 Rem strFolderpath = strFolderpath & "\Attachments\"
 
 'On Error Resume Next
@@ -67,20 +67,24 @@ If (objfolder.Folders.Count > 0) Then
     Next
 End If
 
-Dim objattachment As attachment
+Dim objattachment As Attachment
 Debug.Print "folder: " & objfolder.FolderPath
 Dim htmlbody As String
 Dim pa As PropertyAccessor
 
 ' Check each selected item for attachments. If attachments exist,
 ' save them to the strFolderPath folder and strip them from the item.
-For Each objFolderItem In objfolder.items
+For Each objFolderItem In objfolder.Items
 
 If TypeOf objFolderItem Is Outlook.MailItem Then
     Set objMsg = objFolderItem
 Else
-    Exit For
+    Debug.Print TypeName(objFolderItem)
+    Rem Exit For
+    GoTo ExitSub:
 End If
+
+
 Dim Fldr As Scripting.Folder
 
 
@@ -134,6 +138,8 @@ Dim Fldr As Scripting.Folder
             cid = pa.GetProperty(PR_ATTACH_CONTENT_ID)
             If Len(cid) > 0 Then
                 If InStr(objMsg.htmlbody, cid) Then
+                Rem Stop
+                
                 Else
                     'In case that PR_ATTACHMENT_HIDDEN does not exists,
                     'an error will occur. We simply ignore this error and
@@ -158,7 +164,9 @@ Dim Fldr As Scripting.Folder
                     Set Fldr = fso.GetFolder(attachmentfolder)
                     attachmentfolder = Fldr.ShortPath
                     objAttachments.Item(i).SaveAsFile attachmentfolder & "\" & strFile
-                    Debug.Print "save: " & strFile
+                    
+                    Debug.Print "save: " & attachmentfolder & "\" & strFile
+                    
                 End If
                  
             End If
@@ -166,7 +174,7 @@ Dim Fldr As Scripting.Folder
         Next i
 
     End If
-    
+ResumeNext:
 Next
 
 ExitSub:
@@ -403,4 +411,5 @@ Dim strFolderExists As String
     'End If
  
 End Function
+
 
