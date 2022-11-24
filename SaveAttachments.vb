@@ -139,6 +139,10 @@ Dim Fldr As Scripting.Folder
                 
                     Set Fldr = fso.GetFolder(attachmentfolder)
                     attachmentfolder = Fldr.ShortPath
+                                        if Len(attachmentfolder & "\" & strFile) > 60 Then
+                                            strfile = Left(strfile, Len(strFile)-260)
+                                        end if
+                                        
                     objAttachments.Item(i).SaveAsFile attachmentfolder & "\" & strFile
                     
                     Debug.Print "save: " & attachmentfolder & "\" & strFile
