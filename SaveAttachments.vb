@@ -75,12 +75,9 @@ End If
 Dim Fldr As Scripting.Folder
 
     ' This code only strips attachments from mail items.
-    ' If objMsg.class=olMail Then
     ' Get the Attachments collection of the item.
     Set objAttachments = objMsg.Attachments
     lngCount = objAttachments.Count
-    Rem strDeletedFiles = ""
-
 
     Debug.Print "message: " & objMsg.Subject
 
@@ -104,8 +101,7 @@ Dim Fldr As Scripting.Folder
     
         attachmentfolder = prjPath & "\" & attachmentfolder '& "\"
         
-        For i = lngCount To 1 Step -1
-            
+        For i = lngCount To 1 Step -1        
             
             ' Save attachment before deleting from item.
             ' Get the file name.
@@ -178,7 +174,6 @@ ClearSubject = Replace(ClearSubject, "AW:", "", vbTextCompare)
 ClearSubject = Replace(ClearSubject, "FW:", "", vbTextCompare)
 ClearSubject = Replace(ClearSubject, "WG:", "", vbTextCompare)
 
-
 Dim CleanString As String
 'we have now a minimum length of 1 :-)
 CleanString = "A"
@@ -189,7 +184,6 @@ Dim i As Long
 Dim LenCS As Long
 
 LenCS = Len(ClearSubject)
-
 
 If LenCS > 70 Then
     LenCS = 70
@@ -241,7 +235,6 @@ For i = Len(CleanString) To 1 Step -1
     End If
     
 Next
-
 
 'CON , PRN, AUX, NUL
 'COM1 , COM2, COM3, COM4, COM5, COM6, COM7, COM8, COM9
@@ -318,10 +311,9 @@ If Len(CleanString) = 0 Then
     CleanString = "-"
 End If
 
-
 ClearSubject = CleanString
+                            
 End Function
-
 
 Function CheckCreateFolder(FolderToCheckOrCreate As String) As Boolean
 
