@@ -3,19 +3,15 @@ Const PR_ATTACH_CONTENT_ID As String = "http://schemas.microsoft.com/mapi/propta
 Const PR_ATTACHMENT_HIDDEN As String = "http://schemas.microsoft.com/mapi/proptag/0x7FFE000B"
 Dim fso As New Scripting.FileSystemObject
 
-
 Public Sub SaveAttachments()
 
 Dim objOL As Outlook.Application
-
 
 Dim objAttachments As Outlook.Attachments
 Dim objSelection As Outlook.Selection
 Dim i As Long
 Dim lngCount As Long
 Dim strFile As String
-
-Rem Dim strDeletedFiles As String
 
 ' Get the path to your My Documents folder
 strFolderpath = "O:\1212_USZ\12_CORRESPONDENCE\Attachments\"
@@ -26,36 +22,28 @@ Rem strFolderpath = strFolderpath & "\Attachments\"
 ' Instantiate an Outlook Application object.
 Set objOL = CreateObject("Outlook.Application")
 
-' Get the collection of selected objects.
-Rem Set objSelection = objOL.ActiveExplorer.Selection
-
-
 Dim cid As String
 ' Skript fordert Auswahl eines Ordners auf
-' Sucht alle mails mit gleichem Betreff und Sendedatum
 
 ' Dim Folder and ask User to select the folder
-Debug.Print "--- Pick Folder to check für duplicates"
+Debug.Print "--- Pick Folder to save attachements"
 Dim objfolder As MAPIFolder
 Set objfolder = Outlook.GetNamespace("MAPI").PickFolder
-
 
 If Not objfolder Is Nothing Then
     
     ' Create a dictionary instance.
     Debug.Print "---"
-    Rem Set dict = New Dictionary
-    Rem dict.CompareMode = BinaryCompare
 
-
-ProcessSaveAttachments objfolder
+    ProcessSaveAttachments objfolder
+    
 End If
 
 End Sub
 
 Sub ProcessSaveAttachments(ByVal objfolder As MAPIFolder)
 Dim objMsg As Outlook.MailItem 'Object
-' Set the Attachment folder.
+'Set the Attachment folder.
 
 Dim olFolder As Outlook.Folder
 
@@ -84,9 +72,7 @@ Else
     GoTo ExitSub:
 End If
 
-
 Dim Fldr As Scripting.Folder
-
 
     ' This code only strips attachments from mail items.
     ' If objMsg.class=olMail Then
@@ -118,11 +104,6 @@ Dim Fldr As Scripting.Folder
     
         attachmentfolder = prjPath & "\" & attachmentfolder '& "\"
         
-        ' We need to use a count down loop for removing items
-        
-        ' from a collection. Otherwise, the loop counter gets
-        ' confused and only every other item is removed.
-
         For i = lngCount To 1 Step -1
             
             
@@ -138,7 +119,6 @@ Dim Fldr As Scripting.Folder
             cid = pa.GetProperty(PR_ATTACH_CONTENT_ID)
             If Len(cid) > 0 Then
                 If InStr(objMsg.htmlbody, cid) Then
-                Rem Stop
                 
                 Else
                     'In case that PR_ATTACHMENT_HIDDEN does not exists,
@@ -174,7 +154,9 @@ Dim Fldr As Scripting.Folder
         Next i
 
     End If
+    
 ResumeNext:
+
 Next
 
 ExitSub:
@@ -183,6 +165,7 @@ Set objAttachments = Nothing
 Set objMsg = Nothing
 Set objSelection = Nothing
 Set objOL = Nothing
+
 End Sub
 
 Function ClearSubject(ByVal Subject As String) As String
@@ -246,8 +229,6 @@ For i = Len(CleanString) To 1 Step -1
     If Right(ClearSubject, 1) = " " Then
         CleanString = Left(CleanString, i - 1)
         i = i - 1
-    'Else
-        'Exit For
     
     End If
    
@@ -333,10 +314,6 @@ If CleanString = "LPT9" Then
     CleanString = "-LPT9-"
 End If
 
-
-
-
-
 If Len(CleanString) = 0 Then
     CleanString = "-"
 End If
@@ -377,39 +354,32 @@ End Function
 
 Function CheckFolderExists(strFolderName As String) As Boolean
  
-Dim strFolderExists As String
-   If strFolderName = "\\" Then
-   CheckFolderExists = True
-   Exit Function
-   End If
-   If strFolderName = "\\.\" Then
-   CheckFolderExists = True
-   Exit Function
-   End If
+    Dim strFolderExists As String
+    
+    If strFolderName = "\\" Then
+    
+        CheckFolderExists = True
+        
+        Exit Function
+        
+    End If
+    
+    If strFolderName = "\\.\" Then
+    
+        CheckFolderExists = True
+        
+        Exit Function
+        
+    End If
+    
     If fso.FolderExists(strFolderName) Then
     
     
         CheckFolderExists = True
     Else
-        Rem MsgBox "The selected folder exists"
+    
         CheckFolderExists = False
     
-    
     End If
-    
-    
-    
-    'strFolderExists = Dir(strFolderName, vbDirectory)
- 
-    'If strFolderExists = "" Then
-        Rem MsgBox "The selected folder doesn't exist"
-        'CheckFolderExists = False
-    'Else
-        Rem MsgBox "The selected folder exists"
-        'CheckFolderExists = True
-   
-    'End If
  
 End Function
-
-
