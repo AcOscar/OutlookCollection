@@ -14,7 +14,7 @@ Dim lngCount As Long
 Dim strFile As String
 
 ' Get the path to your My Documents folder
-strFolderpath = "O:\1212_USZ\12_CORRESPONDENCE\Attachments\"
+strFolderpath = "O:\1212_USZ\12_CORRESPONDENCE\A\"
 Rem strFolderpath = strFolderpath & "\Attachments\"
 
 'On Error Resume Next
@@ -69,7 +69,7 @@ If TypeOf objFolderItem Is Outlook.MailItem Then
 Else
     Debug.Print TypeName(objFolderItem)
     Rem Exit For
-    GoTo ExitSub:
+    GoTo ResumeNext:
 End If
 
 Dim Fldr As Scripting.Folder
@@ -79,15 +79,15 @@ Dim Fldr As Scripting.Folder
     Set objAttachments = objMsg.Attachments
     lngCount = objAttachments.Count
 
-    Debug.Print "message: " & objMsg.Subject
-
     If lngCount > 0 Then
+    
+        Debug.Print "message: " & objMsg.Subject
 
         Dim prjPath As String
         
         prjPath = objfolder.FolderPath
         
-        prjPath = Mid(prjPath, 3)
+        prjPath = Mid(prjPath, 12)
         
         prjPath = strFolderpath & prjPath
     
@@ -101,7 +101,7 @@ Dim Fldr As Scripting.Folder
     
         attachmentfolder = prjPath & "\" & attachmentfolder '& "\"
         
-        For i = lngCount To 1 Step -1        
+        For i = lngCount To 1 Step -1
             
             ' Save attachment before deleting from item.
             ' Get the file name.
