@@ -126,9 +126,20 @@ Dim Fldr As Scripting.Folder
                         If CheckCreateFolder(attachmentfolder) Then
                         
                             Set Fldr = fso.GetFolder(attachmentfolder)
+                            
                             strFile = attachmentfolder & "\" & strFile
-                            objAttachments.Item(i).SaveAsFile strFile
-                            Debug.Print "save: " & strFile
+                            
+                            If Len(attachmentfolder & "\" & strFile) > 260 Then
+                    
+                            Rem  strFile = Len(attachementfolder) - 260
+                        
+                                strFile = Left(strFile, 7) & "###" & Right(strFile, 7)
+                    
+                            End If
+
+                            objAttachments.Item(i).SaveAsFile attachmentfolder & "\" & strFile
+                            
+                            Debug.Print "save: " & attachmentfolder & "\" & strFile
                         End If
  
                     End If
@@ -139,8 +150,17 @@ Dim Fldr As Scripting.Folder
                 
                     Set Fldr = fso.GetFolder(attachmentfolder)
                     attachmentfolder = Fldr.ShortPath
-                    objAttachments.Item(i).SaveAsFile attachmentfolder & "\" & strFile
                     
+                    If Len(attachmentfolder & "\" & strFile) > 260 Then
+                    
+                      Rem  strFile = Len(attachementfolder) - 260
+                        
+                        strFile = Left(strFile, 7) & "###" & Right(strFile, 7)
+                    
+                    End If
+                    
+                    objAttachments.Item(i).SaveAsFile attachmentfolder & "\" & strFile
+                   
                     Debug.Print "save: " & attachmentfolder & "\" & strFile
                     
                 End If
