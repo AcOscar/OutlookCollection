@@ -139,10 +139,6 @@ Dim Fldr As Scripting.Folder
                 
                     Set Fldr = fso.GetFolder(attachmentfolder)
                     attachmentfolder = Fldr.ShortPath
-                                        if Len(attachmentfolder & "\" & strFile) > 60 Then
-                                            strfile = Left(strfile, Len(strFile)-260)
-                                        end if
-                                        
                     objAttachments.Item(i).SaveAsFile attachmentfolder & "\" & strFile
                     
                     Debug.Print "save: " & attachmentfolder & "\" & strFile
@@ -243,76 +239,27 @@ Next
 'CON , PRN, AUX, NUL
 'COM1 , COM2, COM3, COM4, COM5, COM6, COM7, COM8, COM9
 'LPT1 , LPT2, LPT3, LPT4, LPT5, LPT6, LPT7, LPT8, LPT9
-If CleanString = "CON" Then
-    CleanString = "-CON-"
-End If
 
-If CleanString = "PRN" Then
-    CleanString = "-PRN-"
-End If
-If CleanString = "AUX" Then
-    CleanString = "-AUX-"
-End If
-If CleanString = "NUL" Then
-    CleanString = "-NUL-"
-End If
-If CleanString = "COM1" Then
-    CleanString = "-COM1-"
-End If
-If CleanString = "COM2" Then
-    CleanString = "-COM2-"
-End If
-If CleanString = "COM3" Then
-    CleanString = "-COM3-"
-End If
-If CleanString = "COM4" Then
-    CleanString = "-COM4-"
-End If
-If CleanString = "COM5" Then
-    CleanString = "-COM5-"
-End If
-If CleanString = "COM6" Then
-    CleanString = "-COM-"
-End If
-If CleanString = "COM7" Then
-    CleanString = "-COM7-"
-End If
-If CleanString = "COM8" Then
-    CleanString = "-COM8-"
-End If
-If CleanString = "COM9" Then
-    CleanString = "-COM9-"
-End If
-If CleanString = "LPT1" Then
-    CleanString = "-LPT1-"
-End If
-If CleanString = "LPT2" Then
-    CleanString = "-LPT2-"
-End If
-If CleanString = "LPT3" Then
-    CleanString = "-LPT3-"
-End If
-If CleanString = "LPT4" Then
-    CleanString = "-LPT4-"
-End If
-If CleanString = "LPT5" Then
-    CleanString = "-LPT5-"
-End If
-If CleanString = "LPT6" Then
-    CleanString = "-LPT6-"
-End If
-If CleanString = "LPT7" Then
-    CleanString = "-LPT7-"
-End If
-If CleanString = "LPT8" Then
-    CleanString = "-LPT8-"
-End If
-If CleanString = "LPT9" Then
-    CleanString = "-LPT9-"
-End If
+LenCS = Len(CleanString)
+Dim searchstring As String
 
-If Len(CleanString) = 0 Then
-    CleanString = "-"
+If LenCS = 4 Then
+
+    searchstring = "COM1 COM2 COM3 COM4 COM5 COM6 COM7 COM8 COM9 LPT1 LPT2 LPT3 LPT4 LPT5 LPT6 LPT7 LPT8 LPT9"
+    
+    If InStr(searchstring, CleanString) Then
+        CleanString = "-" & CleanString & "-"
+    End If
+    
+ElseIf LenCS = 3 Then
+
+    searchstring = "CON PRN AUX NUL"
+    
+    If InStr(searchstring, CleanString) Then
+        CleanString = "-" & CleanString & "-"
+    End If
+
+
 End If
 
 ClearSubject = CleanString
@@ -370,8 +317,8 @@ Function CheckFolderExists(strFolderName As String) As Boolean
     
     If fso.FolderExists(strFolderName) Then
     
-    
         CheckFolderExists = True
+            
     Else
     
         CheckFolderExists = False
