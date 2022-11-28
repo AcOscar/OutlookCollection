@@ -153,9 +153,17 @@ Dim Fldr As Scripting.Folder
                     
                     If Len(attachmentfolder & "\" & strFile) > 260 Then
                     
+                    If Len(strFile) > 14 Then
+                    Dim y As Integer
+                    y = 260 - Len(attachmentfolder)
+                    
+                         strFile = Left(strFile, y - 12) & "###" & Right(strFile, 7)
+                   
+                    End If
+                    
+
                       Rem  strFile = Len(attachementfolder) - 260
                         
-                        strFile = Left(strFile, 7) & "###" & Right(strFile, 7)
                     
                     End If
                     
