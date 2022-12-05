@@ -1,16 +1,11 @@
 ' Microsoft Scripting Runtime muss gebunden werden
 ' (Extras - Reference - Microsoft Scripting Runtime)
-
 Dim dict As Dictionary
 
-
 Sub DupeKiller()
-
     ' first pick a folder
     ' looking for mails with same subject and date
-
-    ' Dim Folder and ask User to select the folder
-    Debug.Print "--- Pick Folder to check für duplicates"
+    Debug.Print "--- Pick Folder to check for duplicates"
     Dim objfolder As MAPIFolder
     Set objfolder = Outlook.GetNamespace("MAPI").PickFolder
   
@@ -25,20 +20,14 @@ End Sub
 
 Private Sub ProcessFolderDupKill(ByVal objfolder As MAPIFolder)
 On Error Resume Next
-Rem For Each subf In folder.Folders
-Rem    removeinfolder (subf)
-Rem Next subf
     Dim olFolder As Outlook.Folder
 
-    Dim strTemp As String
-    Rem Dim Item As Object
     If (objfolder.Folders.Count > 0) Then
         For Each olFolder In objfolder.Folders
             ProcessFolderDupKill olFolder
         Next
     End If
     
-    'Debug.Print "--- Loading Items"
     Dim items As items
     Set items = objfolder.items
     
@@ -64,7 +53,6 @@ Rem Next subf
             If dict.Exists(key) Then
                 Debug.Print "--- Folder: " & objfolder.Name
                 Debug.Print key
-
                 Rem Debug.Print "  Duplicate Found. DELETE"
                 Item.Delete
             Else
@@ -77,5 +65,5 @@ Rem Next subf
         
         Set Item = items.GetPrevious
     Loop
-
 End Sub
+
